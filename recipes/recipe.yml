@@ -51,22 +51,25 @@ modules:
 
   # 3. Flatpaks (GUI Apps - Pre-seeded)
   - type: default-flatpaks
-    notify: true
-    system:
+    configurations:
       - repo-name: flathub
         repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
-        install:
-          - dev.vencord.Vesktop
-          - com.spotify.Client
-          - io.github.zen_browser.zen # Zen Browser
-          - net.lutris.Lutris
-          - com.heroicgameslauncher.hgl
-          - com.usebottles.bottles        # Highly recommended for non-Steam exe's
-          - com.vysp3r.ProtonPlus         # Great for managing Proton versions
+        system:
+          install:
+            - dev.vencord.Vesktop
+            - com.spotify.Client
+            - io.github.zen_browser.zen
+            - net.lutris.Lutris
+            - com.heroicgameslauncher.hgl
+            - com.usebottles.bottles
+            - com.vysp3r.ProtonPlus
 
-  # 4. Boot Screen Branding (Optional - adds professionalism)
+  # 4. Boot Screen Branding
   - type: plymouth
-    theme: bgrt # Uses your UEFI logo, clean and simple
+    data:
+      theme: bgrt # Uses your UEFI logo, clean and simple
+
+  
 
   # 5. The Setup Script
   - type: script
