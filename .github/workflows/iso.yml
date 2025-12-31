@@ -1,23 +1,38 @@
 name: Generate ISO
 on:
-  workflow_run:
-    workflows: ["build"] # Ensure this matches the 'name:' in your main build.yml
-    types: [completed]
   workflow_dispatch:
+  push:
+    paths:
+      - 'recipes/recipe.yml'
 
 jobs:
   build-iso:
     runs-on: ubuntu-latest
+    container:
+      # This provides the 'dnf' environment the generator needs
+      image: fedora:41 
+      options: --privileged
     permissions:
       contents: write
       packages: read
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Generate ISO
         uses: ublue-os/isogenerator@main
+        id: isogenerator
         with:
-          image_name: ursaos
-          image_repo: ghcr.io/timothybear11
-          image_tag: latest
-          variant: 'Kinoite' # Bazzite is KDE-based, so Kinoite is the installer base
-          version: 43
-          publish: true
+          IMAGE_NAME: ursaos
+          IMAGE_REPO: ghcr.io/timothybear11
+          IMAGE_TAG: latest
+          VARIANT: 'Kinoite' # Bazzite is KDE, so we use Kinoite base
+          VERSION: 43
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UrsaOS-ISO
+          path: ${{ steps.isogenerator.outputs.iso-path }}
+          if-no-files-found: error
+          retention-days: 5
