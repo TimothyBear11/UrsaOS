@@ -34,6 +34,7 @@ modules:
 
       # --- Development & Shell ---
       - fish
+      - bash
       - zsh
       - git
       - gh
