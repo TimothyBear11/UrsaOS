@@ -1,9 +1,9 @@
 name: Generate ISO
 on:
-  workflow_dispatch: # Allows you to click a button to start it
-  push:
-    paths:
-      - 'recipes/recipe.yml' # Rebuilds ISO if you change the recipe
+  workflow_run:
+    workflows: ["bluebuild"] # Ensure this matches the 'name:' in your main build.yml
+    types: [completed]
+  workflow_dispatch:
 
 jobs:
   build-iso:
@@ -12,14 +12,14 @@ jobs:
       contents: write
       packages: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Generate ISO
-        uses: blue-build/isogenerator-action@v1
+        uses: ublue-os/isogenerator@v1
         with:
           image-name: ursaos
           installer-repo: fedora-43
           image-tag: latest
-          image-repository: ghcr.io/${{ github.repository_owner }}
-          publish: true # This puts it in your "Releases" tab!
+          # Replace 'timothybear11' with your GitHub username if different
+          image-repository: ghcr.io/timothybear11 
+          variant: 'Kinoite' # Because Bazzite is KDE-based
+          version: 43
+          publish: true
