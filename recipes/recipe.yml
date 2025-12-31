@@ -49,29 +49,28 @@ modules:
       - xdg-desktop-portal-gnome # Good fallback for other WMs
       - sddm-wayland-plasma      # Ensures you can pick Qtile at login
 
+    
   # 3. Flatpaks (GUI Apps - Pre-seeded)
   - type: default-flatpaks
     configurations:
-      - repo-name: flathub
-        repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
-        system:
-          install:
-            - dev.vencord.Vesktop
-            - com.spotify.Client
-            - io.github.zen_browser.zen
-            - net.lutris.Lutris
-            - com.heroicgameslauncher.hgl
-            - com.usebottles.bottles
-            - com.vysp3r.ProtonPlus
+      - scope: system
+        repo:
+          name: flathub
+          url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        install:
+          - dev.vencord.Vesktop
+          - com.spotify.Client
+          - io.github.zen_browser.zen
+          - net.lutris.Lutris
+          - com.heroicgameslauncher.hgl
+          - com.usebottles.bottles
+          - com.vysp3r.ProtonPlus
 
-  # 4. Boot Screen Branding
-  - type: plymouth
-    data:
-      theme: bgrt # Uses your UEFI logo, clean and simple
-
-  
-
-  # 5. The Setup Script
+  # 4. The Setup Script
   - type: script
     scripts:
       - setup-ursa.sh
+
+  
+
+   
