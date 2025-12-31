@@ -1,45 +1,73 @@
----
-# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
-# image will be published to ghcr.io/<user>/<name>
+# recipes/recipe.yml
 name: UrsaOS
-# description will be included in the image's metadata
 description: Forged by Magic. Built with Logic.
+base-image: ghcr.io/ublue-os/bazzite-nvidia  # KDE + Nvidia (Best for AI/CUDA)
+image-version: 43 
 
-# the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 42 # latest is also supported if you want new updates ASAP
-
-# module configuration, executed in order
-# you can include multiple instances of the same module
 modules:
-  - type: files
-    files:
-      - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
-
-  - type: dnf
+  # 1. Add Repositories for your WMs
+  - type: rpm-ostree
     repos:
-      copr:
-        - atim/starship
+      # Hyprland (Solopasha is the gold standard for Fedora)
+      - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-%OS_VERSION%/solopasha-hyprland-fedora-%OS_VERSION%.repo
+      # Niri (Official)
+      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-%OS_VERSION%/yalter-niri-fedora-%OS_VERSION%.repo
+      # Qtile (Official Python-based WM)
+      - https://copr.fedorainfracloud.org/coprs/frostyx/qtile/repo/fedora-%OS_VERSION%/frostyx-qtile-fedora-%OS_VERSION%.repo
+      # Terra (For MangoWC)
+      - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
+
+    # 2. Install Packages (The Meat)
     install:
-      packages:
-        - micro
-        - starship
-    remove:
-      packages:
-        # example: removing firefox (in favor of the flatpak)
-        # "firefox" is the main package, "firefox-langpacks" is a dependency
-        - firefox
-        - firefox-langpacks # also remove firefox dependency (not required for all packages, this is a special case)
+      # --- Window Managers ---
+      - hyprland
+      - niri
+      - mangowc
+      - qtile
+      - qtile-extras
+      - python3-pip           # Needed for Qtile widgets
+      - python3-psutil        # Common Qtile dependency
 
+      # --- Editors ---
+      - neovim
+      - zed
+
+      # --- Development & Shell ---
+      - fish
+      - zsh
+      - git
+      - gh
+      - kitty             # Safety terminal
+      
+      # --- AI / Hardware Support ---
+      # Bazzite-nvidia handles the drivers, but we ensure tools are here
+      - nvtop                 # GPU monitoring
+
+      # --- Desktop Portal & Fallbacks ---
+      - xdg-desktop-portal-hyprland
+      - xdg-desktop-portal-gnome # Good fallback for other WMs
+      - sddm-wayland-plasma      # Ensures you can pick Qtile at login
+
+  # 3. Flatpaks (GUI Apps - Pre-seeded)
   - type: default-flatpaks
-    configurations:
-      - notify: true # Send notification after install/uninstall is finished (true/false)
-        scope: system
-        # If no repo information is specified, Flathub will be used by default
-        install: # system flatpaks we want all users to have and not remove
-          - org.mozilla.firefox
-          - org.gnome.Loupe
-      - scope: user # Also add Flathub user repo, but no user packages
+    notify: true
+    system:
+      - repo-name: flathub
+        repo-url: https://dl.flathub.org/repo/flathub.flatpakrepo
+        install:
+          - dev.vencord.Vesktop
+          - com.spotify.Client
+          - io.github.zen_browser.zen # Zen Browser
+          - net.lutris.Lutris
+          - com.heroicgameslauncher.hgl
+          - com.usebottles.bottles        # Highly recommended for non-Steam exe's
+          - com.vysp3r.ProtonPlus         # Great for managing Proton versions
 
-  - type: signing # this sets up the proper policy & signing files for signed images to work fully
+  # 4. Boot Screen Branding (Optional - adds professionalism)
+  - type: plymouth
+    theme: bgrt # Uses your UEFI logo, clean and simple
+
+  # 5. The Setup Script
+  - type: script
+    scripts:
+      - setup-ursa.sh
