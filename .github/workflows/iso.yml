@@ -1,7 +1,7 @@
 name: Generate ISO
 on:
   workflow_run:
-    workflows: ["bluebuild"] # Ensure this matches the 'name:' in your main build.yml
+    workflows: ["build"] # Ensure this matches the 'name:' in your main build.yml
     types: [completed]
   workflow_dispatch:
 
@@ -13,13 +13,11 @@ jobs:
       packages: read
     steps:
       - name: Generate ISO
-        uses: ublue-os/isogenerator@v1
+        uses: ublue-os/isogenerator@main
         with:
-          image-name: ursaos
-          installer-repo: fedora-43
-          image-tag: latest
-          # Replace 'timothybear11' with your GitHub username if different
-          image-repository: ghcr.io/timothybear11 
-          variant: 'Kinoite' # Because Bazzite is KDE-based
+          image_name: ursaos
+          image_repo: ghcr.io/timothybear11
+          image_tag: latest
+          variant: 'Kinoite' # Bazzite is KDE-based, so Kinoite is the installer base
           version: 43
           publish: true
