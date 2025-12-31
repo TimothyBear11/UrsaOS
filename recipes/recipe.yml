@@ -1,8 +1,8 @@
 # recipes/recipe.yml
 name: UrsaOS
 description: Forged by Magic. Built with Logic.
-base-image: ghcr.io/ublue-os/bazzite-nvidia  # KDE + Nvidia (Best for AI/CUDA)
-image-version: 43 
+base-image: ghcr.io/ublue-os/bazzite  # KDE + Nvidia (Best for AI/CUDA)
+image-version: stable
 
 modules:
   # 1. Add Repositories for your WMs
